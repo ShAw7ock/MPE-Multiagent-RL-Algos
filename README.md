@@ -26,4 +26,7 @@ NOTE: <br>
 Acknowledgement
 ---------------
 I have been studying as a master student. There may be some problems with my codes and understanding of the algorithms.<br>
-Thanks for using `ShAw7ock`'s codes.
+`Shariq Iqbal`'s [MADDPG-PyTorch Codes](https://github.com/shariqiqbal2810/maddpg-pytorch) and `starry-sky6688`'s [StarCraft Multi-Agent RL Codes](https://github.com/starry-sky6688/StarCraft) are used as references.Of course, OpenAI opening their codes of `MADDPG` and `Multi-agent Particle Environment` also gives a lot of help.<br>
+Thanks for their contributions to the open source world.<br>
+***Open source makes AI progress.***<br>
+***Thanks for using `ShAw7ock`'s codes.***
