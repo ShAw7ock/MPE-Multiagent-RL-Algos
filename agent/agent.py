@@ -1,6 +1,7 @@
 import numpy as np
 import torch
 from algos.vdn import VDN
+from algos.qmix import QMIX
 
 
 class Agents:
@@ -10,6 +11,8 @@ class Agents:
         self.obs_shape = args.obs_shape
         if args.algo == 'vdn':
             self.policy = VDN(args)
+        elif args.algo == 'qmix':
+            self.policy = QMIX(args)
         else:
             raise Exception("No such algorithm")
 

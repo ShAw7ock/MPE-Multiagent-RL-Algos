@@ -10,8 +10,8 @@ def get_common_args():
     parser.add_argument("--n_training_threads", default=8, type=int, help="While using the cpu")
     parser.add_argument("--episode_limit", default=25, type=int, help="MPE has no terminate in an episode")
 
-    # The algorithm choices
-    parser.add_argument('--algo', type=str, default='vdn', help='the algorithm to train the agent')
+    # The algorithm choices: vdn, qmix, coma, liir
+    parser.add_argument('--algo', type=str, default='qmix', help='the algorithm to train the agent')
     parser.add_argument('--last_action', type=bool, default=True,
                         help='whether to use the last action to choose action')
     parser.add_argument('--reuse_networks', type=bool, default=True, help='whether to use one network for all agents')
@@ -25,6 +25,8 @@ def get_common_args():
 def get_mixer_args(args):
     args.rnn_hidden_dim = 64
     args.qmix_hidden_dim = 32
+    args.two_hyper_layers = False
+    args.hyper_hidden_dim = 64  # Only if the two_hyper_layers == True
     args.lr = 5e-4
 
     # Epsilon greedy

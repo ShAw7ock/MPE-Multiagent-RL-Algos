@@ -151,7 +151,7 @@ def runner(env, args):
 
 if __name__ == '__main__':
     args = get_common_args()
-    if args.algo.find('vdn') > -1:
+    if args.algo.find('vdn') > -1 or args.algo.find('qmix') > -1:
         args = get_mixer_args(args)
     assert args.n_rollout_threads == 1, "For simple test, the environment are required for 1"
     env = make_parallel_env(args.env_id, args.n_rollout_threads, args.seed)

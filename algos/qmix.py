@@ -1,10 +1,10 @@
 import torch
 import os
 from network.base_net import RNN
-from network.vdn_net import VDNNet
+from network.qmix_net import QMIXNet
 
 
-class VDN:
+class QMIX:
     def __init__(self, args):
         self.n_agents = args.n_agents
         self.n_actions = args.n_actions
@@ -17,8 +17,10 @@ class VDN:
 
         self.eval_rnn = RNN(input_shape, args)
         self.target_rnn = RNN(input_shape, args)
-        self.eval_vdn_net = VDNNet()
-        self.target_vdn_net = VDNNet()
+
+        state_shape = self.obs_shape * self.n_agents
+        self.eval_vdn_net = QMIXNet(state_shape, args)
+        self.target_vdn_net = QMIXNet(state_shape, args)
 
         self.args = args
         if args.use_cuda and torch.cuda.is_available():
@@ -48,8 +50,10 @@ class VDN:
                 batch[key] = torch.tensor(batch[key], dtype=torch.long)
             else:
                 batch[key] = torch.tensor(batch[key], dtype=torch.float32)
-        u, r, terminated = batch['u'], batch['r'], batch['terminated']
+        o, o_next, u, r, terminated = batch['o'], batch['o_next'], batch['u'], batch['r'], batch['terminated']
         if self.args.use_cuda and torch.cuda.is_available():
+            o = o.to(self.device)
+            o_next = o_next.to(self.device)
             u = u.to(self.device)
             r = r.to(self.device)
             terminated = terminated.to(self.device)
@@ -58,8 +62,13 @@ class VDN:
 
         q_targets = q_targets.max(dim=3)[0]
 
-        q_total_eval = self.eval_vdn_net(q_evals)
-        q_total_target = self.target_vdn_net(q_targets)
+        # qmix algorithm needs the total states infos to calculate the mixer network distribution
+        # In the MPE, envs don't support the original states infos due to the Complete Observable (Not the POMDP)
+        # So the state can be seen as the concatenation of all the agents' observations
+        states = o.reshape((bs, self.args.episode_limit, -1))
+        states_next = o_next.reshape((bs, self.args.episode_limit, -1))
+        q_total_eval = self.eval_vdn_net(q_evals, states)
+        q_total_target = self.target_vdn_net(q_targets, states_next)
 
         targets = r + self.args.gamma * q_total_target * (1 - terminated)
         td_error = targets.detach() - q_total_eval
