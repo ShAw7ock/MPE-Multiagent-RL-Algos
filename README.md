@@ -12,7 +12,7 @@ NOTE: <br>
 * Python >= 3.6.0
 * PyTorch == 1.2.0
 * OpenAI Gym == 0.10.5
-* [Multi-agent Particle Environment](https://github.com/openai/multiagent-particle-envs)
+* [Multi-agent Particle Environment(MPE)](https://github.com/openai/multiagent-particle-envs)
 ## Algorithms
 - [x] [VDN](https://arxiv.org/pdf/1706.05296.pdf)
 - [x] [QMIX](http://proceedings.mlr.press/v80/rashid18a/rashid18a.pdf)
@@ -26,7 +26,6 @@ NOTE: <br>
 Acknowledgement
 ---------------
 I have been studying as a master student. There may be some problems with my codes and understanding of the algorithms.<br>
-`Shariq Iqbal`'s [MADDPG-PyTorch Codes](https://github.com/shariqiqbal2810/maddpg-pytorch) and `starry-sky6688`'s [StarCraft Multi-Agent RL Codes](https://github.com/starry-sky6688/StarCraft) are used as references.Of course, OpenAI opening their codes of `MADDPG` and `Multi-agent Particle Environment` also gives a lot of help.<br>
-Thanks for their contributions to the open source world.<br>
+`Shariq Iqbal`'s [MADDPG-PyTorch Codes](https://github.com/shariqiqbal2810/maddpg-pytorch) and `starry-sky6688`'s [StarCraft Multi-Agent RL Codes](https://github.com/starry-sky6688/StarCraft) are used as references.Of course, OpenAI opening their codes of `MADDPG` and `Multi-agent Particle Environment` also gives a lot of help.Thanks for their contributions to the open source world.<br>
 ***Open source makes AI progress.***<br>
 ***Thanks for using `ShAw7ock`'s codes.***
