@@ -1,5 +1,6 @@
 import numpy as np
 import torch
+import copy
 from torch.distributions import one_hot_categorical
 
 
@@ -18,7 +19,7 @@ class RolloutWorker:
         self.min_epsilon = args.min_epsilon
         print('Init RolloutWorker')
 
-    def generate_rollouts(self, episode_num=None, evaluate=False):
+    def generate_episode(self, episode_num=None, evaluate=False):
         o, u, r, u_onehot, terminated = [], [], [], [], []
         obs = self.env.reset()
         terminate = False
@@ -84,5 +85,7 @@ class RolloutWorker:
                        )
         for key in episode.keys():
             episode[key] = np.array([episode[key]])
+        if not evaluate:
+            self.epsilon = epsilon
 
         return episode, episode_reward, np.mean(r)

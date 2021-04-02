@@ -7,15 +7,15 @@ def get_common_args():
                         help="Name of environment")
     parser.add_argument('--seed', type=int, default=123, help='random seed')
     parser.add_argument("--n_rollout_threads", default=1, type=int, help="For simple test, we assume here to be 1")
-    parser.add_argument("--n_training_threads", default=8, type=int, help="While using the cpu")
+    parser.add_argument("--n_training_threads", default=4, type=int, help="While using the cpu")
     parser.add_argument("--episode_limit", default=25, type=int, help="MPE has no terminate in an episode")
 
     # The algorithm choices: vdn, qmix, coma, liir
-    parser.add_argument('--algo', type=str, default='qmix', help='the algorithm to train the agent')
+    parser.add_argument('--algo', type=str, default='vdn', help='the algorithm to train the agent')
     parser.add_argument('--last_action', type=bool, default=True,
                         help='whether to use the last action to choose action')
     parser.add_argument('--reuse_networks', type=bool, default=True, help='whether to use one network for all agents')
-    parser.add_argument('--use_cuda', type=bool, default=True)
+    parser.add_argument('--use_cuda', type=bool, default=False)
     parser.add_argument('--display', type=bool, default=False, help='whether to render while training or evaluating')
     parser.add_argument('--gamma', type=float, default=0.99, help='discount factor')
     args = parser.parse_args()
@@ -37,7 +37,7 @@ def get_mixer_args(args):
     args.epsilon_anneal_scale = 'step'
 
     # the number of the epoch to train the agent
-    args.n_episodes = 100
+    args.n_episodes = 20000
 
     # the number of sampling data episode
     args.n_rollouts = 1
@@ -50,7 +50,7 @@ def get_mixer_args(args):
     args.buffer_size = int(5e3)
 
     # how often to save the model
-    args.save_cycle = 5000
+    args.save_cycle = 10000
 
     # how often to update the target_net
     args.target_update_cycle = 200

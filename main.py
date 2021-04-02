@@ -108,7 +108,7 @@ def runner(env, args):
         # Using the RolloutWork to interact with the environment (rollout the episodes >= 1)
         episodes, rews, mean_rews = [], [], []
         for episode_idx in range(args.n_rollouts):
-            episode, ep_rew, mean_ep_rew = rolloutWorker.generate_rollouts(episode_idx)
+            episode, ep_rew, mean_ep_rew = rolloutWorker.generate_episode(episode_idx)
             episodes.append(episode)
             rews.append(ep_rew)
             mean_rews.append(mean_ep_rew)

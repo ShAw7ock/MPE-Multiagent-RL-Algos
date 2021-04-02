@@ -39,7 +39,7 @@ def train(*, policy, rollout_worker, evaluator,
         # train
         rollout_worker.clear_history()
         for _ in range(n_cycles):
-            episode = rollout_worker.generate_rollouts()
+            episode = rollout_worker.generate_episode()
             policy.store_episode(episode)
             for _ in range(n_batches):
                 policy.train()
@@ -48,7 +48,7 @@ def train(*, policy, rollout_worker, evaluator,
         # test
         evaluator.clear_history()
         for _ in range(n_test_rollouts):
-            evaluator.generate_rollouts()
+            evaluator.generate_episode()
 
         # record logs
         logger.record_tabular('epoch', epoch)

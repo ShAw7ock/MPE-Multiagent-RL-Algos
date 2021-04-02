@@ -38,7 +38,7 @@ class VDN:
 
         self.eval_hidden = None
         self.target_hidden = None
-        print('Init alg VDN')
+        print('Init algo VDN')
 
     def learn(self, batch, max_episode_len, train_step, epsilon=None):
         bs = batch['o'].shape[0]
