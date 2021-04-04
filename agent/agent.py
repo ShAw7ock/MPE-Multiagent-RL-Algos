@@ -2,6 +2,8 @@ import numpy as np
 import torch
 from algos.vdn import VDN
 from algos.qmix import QMIX
+from algos.coma import COMA
+from torch.distributions import Categorical
 
 
 class Agents:
@@ -13,6 +15,8 @@ class Agents:
             self.policy = VDN(args)
         elif args.algo == 'qmix':
             self.policy = QMIX(args)
+        elif args.algo == 'coma':
+            self.policy = COMA(args)
         else:
             raise Exception("No such algorithm")
 
@@ -23,7 +27,7 @@ class Agents:
         self.args = args
         print('Init Agents')
 
-    def select_action(self, obs, last_action, agent_num, epsilon):
+    def select_action(self, obs, last_action, agent_num, epsilon, evaluate=False):
         inputs = obs.copy()
         agent_id = np.zeros(self.n_agents)
         agent_id[agent_num] = 1
@@ -38,11 +42,32 @@ class Agents:
             inputs = inputs.to(self.device)
             hidden_state = hidden_state.to(self.device)
 
+        # get q values
         q_value, self.policy.eval_hidden[:, agent_num, :] = self.policy.eval_rnn(inputs, hidden_state)
-        if np.random.uniform() < epsilon:
-            action = np.random.choice(self.n_actions)
+        # choose the action
+        if self.args.algo == 'coma':
+            action = self._select_action_from_softmax(q_value.cpu(), epsilon, evaluate)
         else:
-            action = torch.argmax(q_value)
+            if np.random.uniform() < epsilon:
+                action = np.random.choice(self.n_actions)
+            else:
+                action = torch.argmax(q_value)
+        return action
+
+    def _select_action_from_softmax(self, inputs, epsilon, evaluate=False):
+        """
+        :param inputs: q_values of all actions
+        """
+        avail_actions = torch.ones_like(inputs)  # (1, n_actions) --> all 1
+        action_num = avail_actions.sum(dim=1, keepdim=True).float().repeat(1, avail_actions.shape[-1])
+
+        prob = torch.nn.functional.softmax(inputs, dim=-1)
+        prob = ((1 - epsilon) * prob + torch.ones_like(prob) * epsilon / action_num)
+
+        if epsilon == 0 and evaluate:
+            action = torch.argmax(prob)
+        else:
+            action = Categorical(prob).sample().long()
         return action
 
     def train(self, batch, train_step, epsilon=None):

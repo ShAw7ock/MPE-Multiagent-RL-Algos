@@ -11,7 +11,7 @@ def get_common_args():
     parser.add_argument("--episode_limit", default=25, type=int, help="MPE has no terminate in an episode")
 
     # The algorithm choices: vdn, qmix, coma, liir
-    parser.add_argument('--algo', type=str, default='vdn', help='the algorithm to train the agent')
+    parser.add_argument('--algo', type=str, default='coma', help='the algorithm to train the agent')
     parser.add_argument('--last_action', type=bool, default=True,
                         help='whether to use the last action to choose action')
     parser.add_argument('--reuse_networks', type=bool, default=True, help='whether to use one network for all agents')
@@ -27,17 +27,17 @@ def get_mixer_args(args):
     args.qmix_hidden_dim = 32
     args.two_hyper_layers = False
     args.hyper_hidden_dim = 64  # Only if the two_hyper_layers == True
-    args.lr = 5e-4
+    args.lr = 1e-3
 
     # Epsilon greedy
     args.epsilon = 1
     args.min_epsilon = 0.05
-    anneal_steps = 50000
+    anneal_steps = 150000
     args.anneal_epsilon = (args.epsilon - args.min_epsilon) / anneal_steps
     args.epsilon_anneal_scale = 'step'
 
     # the number of the epoch to train the agent
-    args.n_episodes = 20000
+    args.n_episodes = 200000
 
     # the number of sampling data episode
     args.n_rollouts = 1
@@ -51,6 +51,40 @@ def get_mixer_args(args):
 
     # how often to save the model
     args.save_cycle = 10000
+
+    # how often to update the target_net
+    args.target_update_cycle = 200
+
+    # prevent gradient explosion
+    args.grad_norm_clip = 10
+
+    return args
+
+
+def get_coma_args(args):
+    # network
+    args.rnn_hidden_dim = 64
+    args.critic_dim = 128
+    args.actor_lr = 1e-4
+    args.critic_lr = 1e-3
+
+    # epsilon-greedy
+    args.epsilon = 0.5
+    args.anneal_epsilon = 0.00064
+    args.min_epsilon = 0.02
+    args.epsilon_anneal_scale = 'epoch'
+
+    # lambda of td-lambda return
+    args.td_lambda = 0.8
+
+    # the number of the epoch to train the agent
+    args.n_episodes = 20000
+
+    # the number of the episodes in one epoch
+    args.n_rollouts = 1
+
+    # how often to save the model
+    args.save_cycle = 5000
 
     # how often to update the target_net
     args.target_update_cycle = 200
