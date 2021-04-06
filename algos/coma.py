@@ -135,11 +135,14 @@ class COMA:
         u_onehot = u_onehot.view((bs, 1, -1)).repeat(1, self.n_agents, 1)   # (bs, n_agents, n_agents * n_actions)
         u_onehot_next = u_onehot_next.view((bs, 1, -1)).repeat(1, self.n_agents, 1)
 
+        """
+        # If the last actions is required
         if transition_idx == 0:
             u_onehot_last = torch.zeros_like(u_onehot)
         else:
             u_onehot_last = batch['u_onehot'][:, transition_idx - 1]
             u_onehot_last = u_onehot_last.view((bs, 1, -1)).repeat(1, self.n_agents, 1)
+        """
 
         inputs, inputs_next = [], []
         # States
@@ -147,9 +150,16 @@ class COMA:
         states_next = obs_next.view((bs, 1, -1)).repeat(1, self.n_agents, 1)
         inputs.append(states)
         inputs_next.append(states_next)
-        # # Last actions
-        # inputs.append(u_onehot_last)
-        # inputs_next.append(u_onehot)
+
+        """
+        # Last actions
+        inputs.append(u_onehot_last)
+        inputs_next.append(u_onehot)
+        """
+
+        # Observations
+        inputs.append(obs)
+        inputs_next.append(obs_next)
 
         # Current actions
         # COMA require the actions of other agents but not the agent itself, so its own action should be masked.
@@ -209,12 +219,15 @@ class COMA:
 
     def _get_critic_input_shape(self):
         # The coma critic network require the total state and total action infos
-        # State
+        # shape = ((o1,...,on), oi, ai, (a1,...,an)) --> note: mask out the agent i 's action with zeros
+        # State (concatenation of all agents' local observations)
         input_shape = self.obs_shape * self.n_agents
+        # Observation
+        input_shape += self.obs_shape
         # agent_id
         input_shape += self.n_agents
-        # Critic Network needs current action and last action infos (default with last action)
-        # The reused critic network require the inputs with all the agents' action infos
+        # Critic Network needs current action and last action infos (default without last actions)
+        # Joint actions
         input_shape += self.n_actions * self.n_agents
 
         return input_shape
