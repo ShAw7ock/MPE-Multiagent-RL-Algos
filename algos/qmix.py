@@ -19,23 +19,23 @@ class QMIX:
         self.target_rnn = RNN(input_shape, args)
 
         state_shape = self.obs_shape * self.n_agents
-        self.eval_vdn_net = QMIXNet(state_shape, args)
-        self.target_vdn_net = QMIXNet(state_shape, args)
+        self.eval_qmix_net = QMIXNet(state_shape, args)
+        self.target_qmix_net = QMIXNet(state_shape, args)
 
         self.args = args
         if args.use_cuda and torch.cuda.is_available():
             self.device = torch.device("cuda:0")
             self.eval_rnn.to(self.device)
             self.target_rnn.to(self.device)
-            self.eval_vdn_net.to(self.device)
-            self.target_vdn_net.to(self.device)
+            self.eval_qmix_net.to(self.device)
+            self.target_qmix_net.to(self.device)
         else:
             self.device = torch.device("cpu")
 
         self.target_rnn.load_state_dict(self.eval_rnn.state_dict())
-        self.target_vdn_net.load_state_dict(self.eval_vdn_net.state_dict())
+        self.target_qmix_net.load_state_dict(self.eval_qmix_net.state_dict())
 
-        self.eval_parameters = list(self.eval_vdn_net.parameters()) + list(self.eval_rnn.parameters())
+        self.eval_parameters = list(self.eval_qmix_net.parameters()) + list(self.eval_rnn.parameters())
         self.optimizer = torch.optim.Adam(self.eval_parameters, lr=args.lr)
 
         self.eval_hidden = None
@@ -67,8 +67,8 @@ class QMIX:
         # So the state can be seen as the concatenation of all the agents' observations
         states = o.reshape((bs, self.args.episode_limit, -1))
         states_next = o_next.reshape((bs, self.args.episode_limit, -1))
-        q_total_eval = self.eval_vdn_net(q_evals, states)
-        q_total_target = self.target_vdn_net(q_targets, states_next)
+        q_total_eval = self.eval_qmix_net(q_evals, states)
+        q_total_target = self.target_qmix_net(q_targets, states_next)
 
         targets = r + self.args.gamma * q_total_target * (1 - terminated)
         td_error = targets.detach() - q_total_eval
@@ -81,7 +81,7 @@ class QMIX:
 
         if train_step > 0 and train_step % self.args.target_update_cycle == 0:
             self.target_rnn.load_state_dict(self.eval_rnn.state_dict())
-            self.target_vdn_net.load_state_dict(self.eval_vdn_net.state_dict())
+            self.target_qmix_net.load_state_dict(self.eval_qmix_net.state_dict())
 
     def _get_q_values(self, batch, max_episode_len):
         bs = batch['o'].shape[0]
@@ -134,4 +134,12 @@ class QMIX:
 
     def get_params(self):
         return {'eval_rnn': self.eval_rnn.state_dict(),
-                'eval_vdn_net': self.eval_vdn_net.state_dict()}
+                'eval_qmix_net': self.eval_qmix_net.state_dict()}
+
+    def load_params(self, params_dict):
+        # Get parameters from save_dict
+        self.eval_rnn.load_state_dict(params_dict['eval_rnn'])
+        self.eval_qmix_net.load_state_dict(params_dict['eval_qmix_net'])
+        # Copy the eval networks to target networks
+        self.target_rnn.load_state_dict(self.eval_rnn.state_dict())
+        self.target_qmix_net.load_state_dict(self.eval_qmix_net.state_dict())

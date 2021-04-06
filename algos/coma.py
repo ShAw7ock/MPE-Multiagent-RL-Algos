@@ -262,3 +262,10 @@ class COMA:
     def get_params(self):
         return {'eval_critic': self.eval_critic.state_dict(),
                 'eval_rnn': self.eval_rnn.state_dict()}
+
+    def load_params(self, params_dict):
+        # Get parameters from save_dict
+        self.eval_rnn.load_state_dict(params_dict['eval_rnn'])
+        self.eval_critic.load_state_dict(params_dict['eval_critic'])
+        # Copy the eval networks to target networks
+        self.target_critic.load_state_dict(self.target_critic.state_dict())

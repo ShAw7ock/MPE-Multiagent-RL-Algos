@@ -24,9 +24,9 @@ However, our goal to use the simple MPE environment is to verify our new algorit
 - [x] [COMA](https://ojs.aaai.org/index.php/AAAI/article/view/11794)
 - [ ] [LIIR](https://proceedings.neurips.cc/paper/2019/file/07a9d3fed4c5ea6b17e80258dee231fa-Paper.pdf)
 ## TODO List
-- [ ] Evaluate and rendering
+- [x] Evaluate and rendering
 - [ ] Figures and comparing
-- [ ] Upload the training models.pt
+- [x] Upload the training models.pt
 - [ ] Multi-threading with creating envs
 
 Acknowledgement

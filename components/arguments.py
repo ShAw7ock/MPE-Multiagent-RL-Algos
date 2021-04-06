@@ -11,7 +11,7 @@ def get_common_args():
     parser.add_argument("--episode_limit", default=25, type=int, help="MPE has no terminate in an episode")
 
     # The algorithm choices: vdn, qmix, coma, liir
-    parser.add_argument('--algo', type=str, default='coma', help='the algorithm to train the agent')
+    parser.add_argument('--algo', type=str, default='vdn', help='the algorithm to train the agent')
     parser.add_argument('--last_action', type=bool, default=False,
                         help='whether to use the last action to choose action')
     parser.add_argument('--reuse_networks', type=bool, default=True, help='whether to use one network for all agents')

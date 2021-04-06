@@ -126,3 +126,11 @@ class VDN:
     def get_params(self):
         return {'eval_rnn': self.eval_rnn.state_dict(),
                 'eval_vdn_net': self.eval_vdn_net.state_dict()}
+
+    def load_params(self, params_dict):
+        # Get parameters from save_dict
+        self.eval_rnn.load_state_dict(params_dict['eval_rnn'])
+        self.eval_vdn_net.load_state_dict(params_dict['eval_vdn_net'])
+        # Copy the eval networks to target networks
+        self.target_rnn.load_state_dict(self.eval_rnn.state_dict())
+        self.target_vdn_net.load_state_dict(self.eval_vdn_net.state_dict())

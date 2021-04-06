@@ -77,3 +77,7 @@ class Agents:
     def save(self, filename):
         params_dict = self.policy.get_params()
         torch.save(params_dict, filename)
+
+    def load(self, filename):
+        params_dict = torch.load(filename)
+        self.policy.load_params(params_dict)
