@@ -84,7 +84,7 @@ class COMA:
         q_evals, q_targets = self._get_q_values(batch, max_episode_len)     # (bs, episode_limit, n_agents, n_actions)
         q_values = q_evals.clone()  # As the returns of the function to calculate the advantage
 
-        q_evals = torch.gather(q_evals, dim=3, index=u).squeeze(3)  # (bs, episode_limit, n_agents)
+        q_evals = torch.gather(q_evals, dim=3, index=u).squeeze(3)          # (bs, episode_limit, n_agents)
         q_targets = torch.gather(q_targets, dim=3, index=u_next).squeeze(3)
         targets = self._td_lambda_target(batch, max_episode_len, q_targets.cpu())
         if self.args.use_cuda:
@@ -142,12 +142,15 @@ class COMA:
             u_onehot_last = u_onehot_last.view((bs, 1, -1)).repeat(1, self.n_agents, 1)
 
         inputs, inputs_next = [], []
-        # Observation
-        inputs.append(obs)
-        inputs_next.append(obs_next)
-        # Last actions
-        inputs.append(u_onehot_last)
-        inputs_next.append(u_onehot)
+        # States
+        states = obs.view((bs, 1, -1)).repeat(1, self.n_agents, 1)              # (bs, n_agents, n_agents * obs_shape)
+        states_next = obs_next.view((bs, 1, -1)).repeat(1, self.n_agents, 1)
+        inputs.append(states)
+        inputs_next.append(states_next)
+        # # Last actions
+        # inputs.append(u_onehot_last)
+        # inputs_next.append(u_onehot)
+
         # Current actions
         # COMA require the actions of other agents but not the agent itself, so its own action should be masked.
         action_mask = (1 - torch.eye(self.n_agents))
@@ -205,20 +208,21 @@ class COMA:
         return action_prob
 
     def _get_critic_input_shape(self):
-        # obs
-        input_shape = self.obs_shape
+        # The coma critic network require the total state and total action infos
+        # State
+        input_shape = self.obs_shape * self.n_agents
         # agent_id
         input_shape += self.n_agents
         # Critic Network needs current action and last action infos (default with last action)
         # The reused critic network require the inputs with all the agents' action infos
-        input_shape += self.n_actions * self.n_agents * 2
+        input_shape += self.n_actions * self.n_agents
 
         return input_shape
 
     def _td_lambda_target(self, batch, max_episode_len, q_targets):
         bs = batch['o'].shape[0]
         terminated = (1 - batch["terminated"].float()).repeat(1, 1, self.n_agents)
-        r = batch['r'].repeat((1, 1, self.n_agents))
+        r = batch['r'].repeat((1, 1, self.n_agents))    # (bs, episode_limit, 1) --> (bs, episode_limit, n_agents)
 
         n_step_returns = torch.zeros((bs, max_episode_len, self.n_agents, max_episode_len))
         for transition_idx in range(max_episode_len - 1, -1, -1):
