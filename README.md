@@ -2,7 +2,7 @@ MPE-Multiagent-Reinforcement Learning-Algorithms
 =======================
 ## MPE
 This is a simple verification experiments codes for `Multi-Agent RL` using OpenAI [Multi-agent Particle Environment](https://github.com/openai/multiagent-particle-envs).<br>
-The environment concludes many benchmarks and originally prepare for [MADDPG](https://arxiv.org/pdf/1706.02275.pdf) algorithm.<br>
+The environment includes many benchmarks and originally prepare for [MADDPG](https://arxiv.org/pdf/1706.02275.pdf) algorithm.<br>
 Since the simple environment settings, `MPE` seems to be a good toy experienments' environment to verify our new Multi-Agent RL algorithms and compare with other baselines.<br>
 I write down some famous multi-agent RL algorithms for you so that you could change fewer codes to realize your own algorithms and verify the experiments results.<br>
 <br>
@@ -31,6 +31,8 @@ However, our goal to use the simple MPE environment is to verify our new algorit
 
 Acknowledgement
 ---------------
-I have been studying as a master student. There may be some problems with my codes and understanding of the algorithms.<br>
-`Shariq Iqbal`'s [MADDPG-PyTorch Codes](https://github.com/shariqiqbal2810/maddpg-pytorch) and `starry-sky6688`'s [StarCraft Multi-Agent RL Codes](https://github.com/starry-sky6688/StarCraft) are used as references.Of course, OpenAI opening their codes of `MADDPG` and `Multi-agent Particle Environment` also gives a lot of help.Thanks for their contributions to the open source world.<br>
+* I have been studying as a master student. There may be some problems with my codes and understanding of the algorithms.<br>
+* Modifying the parameters of the neural networks seems to be a big problem, and I can assure that the `VDN` can achieve the same performance as the MADDPG did. QMIX and COMA require further modified<br>
+* `Shariq Iqbal`'s [MADDPG-PyTorch Codes](https://github.com/shariqiqbal2810/maddpg-pytorch) and `starry-sky6688`'s [StarCraft Multi-Agent RL Codes](https://github.com/starry-sky6688/StarCraft) are used as references.Of course, OpenAI opening their codes of `MADDPG` and `Multi-agent Particle Environment` also gives a lot of help.Thanks for their contributions to the open source world.<br>
+
 ***Thanks for using `ShAw7ock`'s codes.***
