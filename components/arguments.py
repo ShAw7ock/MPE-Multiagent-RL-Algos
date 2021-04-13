@@ -71,7 +71,7 @@ def get_coma_args(args):
     # epsilon-greedy
     args.epsilon = 0.5
     args.min_epsilon = 0.01
-    anneal_steps = 10000
+    anneal_steps = 100000
     args.anneal_epsilon = (args.epsilon - args.min_epsilon) / anneal_steps
     args.epsilon_anneal_scale = 'epoch'
 
@@ -79,7 +79,7 @@ def get_coma_args(args):
     args.td_lambda = 0.8
 
     # the number of the epoch to train the agent
-    args.n_episodes = 30000
+    args.n_episodes = 150000
 
     # the number of the episodes in one epoch
     args.n_rollouts = 1

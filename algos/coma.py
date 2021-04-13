@@ -157,10 +157,6 @@ class COMA:
         inputs_next.append(u_onehot)
         """
 
-        # Observations
-        inputs.append(obs)
-        inputs_next.append(obs_next)
-
         # Current actions
         # COMA require the actions of other agents but not the agent itself, so its own action should be masked.
         action_mask = (1 - torch.eye(self.n_agents))
@@ -219,11 +215,9 @@ class COMA:
 
     def _get_critic_input_shape(self):
         # The coma critic network require the total state and total action infos
-        # shape = ((o1,...,on), oi, ai, (a1,...,an)) --> note: mask out the agent i 's action with zeros
+        # shape = ((o1,...,on), ai, (u1,...,un)) --> note: mask out the agent i 's action with zeros
         # State (concatenation of all agents' local observations)
         input_shape = self.obs_shape * self.n_agents
-        # Observation
-        input_shape += self.obs_shape
         # agent_id
         input_shape += self.n_agents
         # Critic Network needs current action and last action infos (default without last actions)
