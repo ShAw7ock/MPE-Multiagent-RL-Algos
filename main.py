@@ -10,7 +10,7 @@ from components.make_env import make_env
 from components.env_wrappers import SubprocVecEnv, DummyVecEnv
 from components.buffer import ReplayBuffer
 from components.rollout import RolloutWorker
-from components.arguments import get_common_args, get_mixer_args, get_coma_args
+from components.arguments import get_common_args, get_mixer_args, get_coma_args, get_liir_args
 from agent.agent import Agents
 
 import matplotlib
@@ -118,13 +118,22 @@ def runner(env, args):
             for key in episodes_batch.keys():
                 episodes_batch[key] = np.concatenate((episodes_batch[key], episode[key]), axis=0)
 
-        if args.algo.find('coma') == -1:    # qmix or vdn
+        # Algorithms VDN and QMIX need the buffer but not the epsilon to train agents
+        if args.algo.find('vdn') > -1 or args.algo.find('qmix') > -1:
             buffer.push(episodes_batch)
             for _ in range(args.training_steps):
                 mini_batch = buffer.sample(min(buffer.current_size, args.batch_size))
                 agents.train(mini_batch, train_step)
                 train_step += 1
-        else:   # coma
+        # Algorithms LIIR needs the buffer and the epsilon to train agents
+        elif args.algo.find('liir') > -1:
+            buffer.push(episodes_batch)
+            for _ in range(args.training_steps):
+                mini_batch = buffer.sample(min(buffer.current_size, args.batch_size))
+                agents.train(mini_batch, train_step, rolloutWorker.epsilon)
+                train_step += 1
+        # Algorithms COMA doesn't need the buffer (on-policy) but the epsilon to train agents
+        else:
             agents.train(episodes_batch, train_step, rolloutWorker.epsilon)
             train_step += 1
 
@@ -156,8 +165,10 @@ if __name__ == '__main__':
     args = get_common_args()
     if args.algo.find('vdn') > -1 or args.algo.find('qmix') > -1:
         args = get_mixer_args(args)
-    else:
+    elif args.algo.find('coma') > -1:
         args = get_coma_args(args)
+    else:
+        args = get_liir_args(args)
     assert args.n_rollout_threads == 1, "For simple test, the environment are required for 1"
     env = make_parallel_env(args.env_id, args.n_rollout_threads, args.seed)
     scheme = get_env_scheme(env)

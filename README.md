@@ -25,11 +25,11 @@ However, our goal to use the simple MPE environment is to verify our new algorit
 - [x] [VDN](https://arxiv.org/pdf/1706.05296.pdf)
 - [x] [QMIX](http://proceedings.mlr.press/v80/rashid18a/rashid18a.pdf)
 - [x] [COMA](https://ojs.aaai.org/index.php/AAAI/article/view/11794)
-- [ ] [LIIR](https://proceedings.neurips.cc/paper/2019/file/07a9d3fed4c5ea6b17e80258dee231fa-Paper.pdf)
+- [x] [LIIR](https://proceedings.neurips.cc/paper/2019/file/07a9d3fed4c5ea6b17e80258dee231fa-Paper.pdf)
 ## TODO List
 - [x] Evaluate and rendering
 - [ ] Figures and comparing
-- [x] Upload the training models.pt
+- [ ] Upload the training models.pt
 - [ ] Multi-threading with creating envs
 
 Acknowledgement
