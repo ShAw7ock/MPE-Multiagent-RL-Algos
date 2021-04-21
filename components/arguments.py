@@ -11,7 +11,7 @@ def get_common_args():
     parser.add_argument("--episode_limit", default=25, type=int, help="MPE has no terminate in an episode")
 
     # The algorithm choices: vdn, qmix, coma, liir
-    parser.add_argument('--algo', type=str, default='liir', help='the algorithm to train the agent')
+    parser.add_argument('--algo', type=str, default='qmix', help='the algorithm to train the agent')
     parser.add_argument('--last_action', type=bool, default=False,
                         help='whether to use the last action to choose action')
     parser.add_argument('--reuse_networks', type=bool, default=True, help='whether to use one network for all agents')
@@ -79,13 +79,13 @@ def get_coma_args(args):
     args.td_lambda = 0.8
 
     # the number of the epoch to train the agent
-    args.n_episodes = 150000
+    args.n_episodes = 200000
 
     # the number of the episodes in one epoch
     args.n_rollouts = 1
 
     # how often to save the model
-    args.save_cycle = 5000
+    args.save_cycle = 20000
 
     # how often to update the target_net
     args.target_update_cycle = 200
@@ -100,8 +100,8 @@ def get_liir_args(args):
     # network
     args.rnn_hidden_dim = 64
     args.critic_dim = 256
-    args.actor_lr = 0.0005
-    args.critic_lr = 0.0005
+    args.actor_lr = 1e-3
+    args.critic_lr = 1e-3
 
     # epsilon-greedy
     args.epsilon = 0.5
@@ -114,7 +114,7 @@ def get_liir_args(args):
     args.td_lambda = 0.8
 
     # the number of the epoch to train the agent
-    args.n_episodes = 150000
+    args.n_episodes = 200000
 
     # the number of training steps in one episode
     args.training_steps = 1
@@ -127,9 +127,12 @@ def get_liir_args(args):
     args.buffer_size = int(5e3)
 
     # how often to save the model
-    args.save_cycle = 5000
+    args.save_cycle = 10000
 
     # how often to update the target_net
     args.target_update_cycle = 200
+
+    # prevent gradient explosion
+    args.grad_norm_clip = 10
 
     return args

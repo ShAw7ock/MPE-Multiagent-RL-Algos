@@ -42,7 +42,7 @@ class RolloutWorker:
                     env_show.render('human')
 
             actions, actions_onehot = [], []
-            obs = obs.squeeze(0)
+            # obs = obs.squeeze(0)
             for agent_num in range(self.n_agents):
                 action = self.agents.select_action(obs[agent_num], last_action[agent_num], agent_num, epsilon)
                 action_onehot = np.zeros(self.n_actions)
@@ -51,11 +51,12 @@ class RolloutWorker:
                 actions_onehot.append(action_onehot)
                 last_action[agent_num] = action_onehot
 
-            actions_onehot_env = [actions_onehot for _ in range(self.args.n_rollout_threads)]
-            obs_next, rewards, terminates, infos = self.env.step(actions_onehot_env)
-            rewards = rewards.reshape([-1, self.n_agents])
+            # actions_onehot_env = [actions_onehot for _ in range(self.args.n_rollout_threads)]
+            # obs_next, rewards, terminates, infos = self.env.step(actions_onehot_env)
+            obs_next, rewards, terminates, infos = self.env.step(actions_onehot)
+            rewards = np.array(rewards).reshape([-1, self.n_agents])
             reward = np.mean(rewards, axis=-1)
-            terminates = terminates.reshape([-1, self.n_agents])
+            terminates = np.array(terminates).reshape([-1, self.n_agents])
             terminate = np.mean(terminates, axis=-1)
 
             o.append(obs)
@@ -71,7 +72,7 @@ class RolloutWorker:
                 epsilon = epsilon - self.anneal_epsilon if epsilon > self.min_epsilon else epsilon
 
         # Append the last infos
-        obs = obs.reshape([self.n_agents, -1])
+        # obs = obs.reshape([self.n_agents, -1])
         o.append(obs)
         o_next = o[1:]
         o = o[:-1]

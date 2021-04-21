@@ -170,7 +170,7 @@ if __name__ == '__main__':
     else:
         args = get_liir_args(args)
     assert args.n_rollout_threads == 1, "For simple test, the environment are required for 1"
-    env = make_parallel_env(args.env_id, args.n_rollout_threads, args.seed)
+    env = make_env(args.env_id)
     scheme = get_env_scheme(env)
     args.n_agents = len(scheme)
     args.obs_shape = scheme[0]['observation_space']
