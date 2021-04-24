@@ -9,6 +9,7 @@ I write down some famous multi-agent RL algorithms for you so that you could cha
 The codes can only be used with the one of the benchmarks named `"simple_spread"` (env_id) which is a complete cooperation setting.<br>
 If the codes would like to adapt the other envs like MADDPG codes did, there would be much other work to do.<br>
 However, our goal to use the simple MPE environment is to verify our new algorithm, the `"simple_spread"` is enough. The next experiments which could be put into the papers may be the [StarCraft-SMAC](https://github.com/oxwhirl/smac) or something else.<br>
+And the biggest difference between my code and MADDPG's code is the ***Design of the Experience Buffer*** which you could find in the `components/buffer.py`. The storage of the data is placed as ***[episodes_num, steps, n_agents, shape]***.<br>
 
 ***Simple Spread Training Demo***<br>
 ![img](https://github.com/ShAw7ock/MPE-Multiagent-RL-Algos/blob/master/models/simple_spread/vdn/run3/results/VDN_Simple_Spread.gif)
@@ -26,6 +27,7 @@ However, our goal to use the simple MPE environment is to verify our new algorit
 - [x] [QMIX](http://proceedings.mlr.press/v80/rashid18a/rashid18a.pdf)
 - [x] [COMA](https://ojs.aaai.org/index.php/AAAI/article/view/11794)
 - [x] [LIIR](https://proceedings.neurips.cc/paper/2019/file/07a9d3fed4c5ea6b17e80258dee231fa-Paper.pdf)
+- [x] [MAAC](http://proceedings.mlr.press/v97/iqbal19a/iqbal19a.pdf)
 ## TODO List
 - [x] Evaluate and rendering
 - [ ] Figures and comparing

@@ -4,6 +4,7 @@ from algos.vdn import VDN
 from algos.qmix import QMIX
 from algos.coma import COMA
 from algos.liir import LIIR
+from algos.maac import MAAC
 from torch.distributions import Categorical
 
 
@@ -20,6 +21,8 @@ class Agents:
             self.policy = COMA(args)
         elif args.algo == 'liir':
             self.policy = LIIR(args)
+        elif args.algo == 'maac':
+            self.policy = MAAC(args)
         else:
             raise Exception("No such algorithm")
 
@@ -48,7 +51,7 @@ class Agents:
         # get q values
         q_value, self.policy.eval_hidden[:, agent_num, :] = self.policy.eval_rnn(inputs, hidden_state)
         # choose the action
-        if self.args.algo == 'coma' or self.args.algo == 'liir':
+        if self.args.algo == 'coma' or self.args.algo == 'liir' or self.args.algo == 'maac':
             action = self._select_action_from_softmax(q_value.cpu(), epsilon, evaluate)
         else:
             if np.random.uniform() < epsilon:

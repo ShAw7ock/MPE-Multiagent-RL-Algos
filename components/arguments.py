@@ -10,8 +10,8 @@ def get_common_args():
     parser.add_argument("--n_training_threads", default=4, type=int, help="While using the cpu")
     parser.add_argument("--episode_limit", default=25, type=int, help="MPE has no terminate in an episode")
 
-    # The algorithm choices: vdn, qmix, coma, liir
-    parser.add_argument('--algo', type=str, default='qmix', help='the algorithm to train the agent')
+    # The algorithm choices: vdn, qmix, coma, liir, maac
+    parser.add_argument('--algo', type=str, default='maac', help='the algorithm to train the agent')
     parser.add_argument('--last_action', type=bool, default=False,
                         help='whether to use the last action to choose action')
     parser.add_argument('--reuse_networks', type=bool, default=True, help='whether to use one network for all agents')
@@ -112,6 +112,47 @@ def get_liir_args(args):
 
     # lambda of td-lambda return
     args.td_lambda = 0.8
+
+    # the number of the epoch to train the agent
+    args.n_episodes = 200000
+
+    # the number of training steps in one episode
+    args.training_steps = 1
+
+    # the number of the episodes in one epoch
+    args.n_rollouts = 1
+
+    # experience replay
+    args.batch_size = 32
+    args.buffer_size = int(5e3)
+
+    # how often to save the model
+    args.save_cycle = 10000
+
+    # how often to update the target_net
+    args.target_update_cycle = 200
+
+    # prevent gradient explosion
+    args.grad_norm_clip = 10
+
+    return args
+
+
+def get_maac_args(args):
+    # network
+    args.rnn_hidden_dim = 64
+    args.critic_hidden_dim = 128
+    args.actor_lr = 1e-3
+    args.critic_lr = 1e-3
+    args.attend_heads = 4
+    args.norm_in = False
+
+    # epsilon-greedy
+    args.epsilon = 0.5
+    args.min_epsilon = 0.01
+    anneal_steps = 50000
+    args.anneal_epsilon = (args.epsilon - args.min_epsilon) / anneal_steps
+    args.epsilon_anneal_scale = 'epoch'
 
     # the number of the epoch to train the agent
     args.n_episodes = 200000
