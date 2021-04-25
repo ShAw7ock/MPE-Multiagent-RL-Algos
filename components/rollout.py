@@ -1,7 +1,6 @@
 import numpy as np
 import torch
 import copy
-from torch.distributions import one_hot_categorical
 
 
 class RolloutWorker:
@@ -62,7 +61,7 @@ class RolloutWorker:
             o.append(obs)
             u.append(np.reshape(actions, [self.n_agents, -1]))
             r.append(reward)
-            u_onehot.append(actions_onehot)  # 因为仅有一个平行环境，这里注意取出对应的actions_onehot存入Buffer中
+            u_onehot.append(actions_onehot)
             terminated.append(terminate)
 
             episode_reward += reward

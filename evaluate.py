@@ -6,7 +6,7 @@ import time
 from gym.spaces import Box, Tuple, Discrete
 from pathlib import Path
 from components.make_env import make_env
-from components.arguments import get_common_args, get_mixer_args, get_coma_args
+from components.arguments import get_common_args, get_mixer_args, get_coma_args, get_liir_args, get_maac_args
 from agent.agent import Agents
 
 import matplotlib
@@ -99,6 +99,10 @@ if __name__ == '__main__':
     args = get_common_args()
     if args.algo.find('vdn') > -1 or args.algo.find('qmix') > -1:
         args = get_mixer_args(args)
+    elif args.algo.find('maac') > -1:
+        args = get_maac_args(args)
+    elif args.algo.find('liir') > -1:
+        args = get_liir_args(args)
     else:
         args = get_coma_args(args)
     assert args.n_rollout_threads == 1, "For simple test, the environment are required for 1"
@@ -110,7 +114,7 @@ if __name__ == '__main__':
 
     # Some hyper-parameters for evaluating
     args.evaluate = True
-    args.run_num = 3
+    args.run_num = 1
     args.incremental = None
     args.fps = 30
     args.n_evaluate_episodes = 10
