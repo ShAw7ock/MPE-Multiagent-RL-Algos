@@ -11,8 +11,12 @@ If the codes would like to adapt the other envs like MADDPG codes did, there wou
 However, our goal to use the simple MPE environment is to verify our new algorithm, the `"simple_spread"` is enough. The next experiments which could be put into the papers may be the [StarCraft-SMAC](https://github.com/oxwhirl/smac) or something else.<br>
 And the biggest difference between my code and MADDPG's code is the ***Design of the Experience Buffer*** which you could find in the `components/buffer.py`. The storage of the data is placed as ***[episodes_num, steps, n_agents, shape]***.<br>
 
-***Simple Spread Training Demo***<br>
-<img src="https://github.com/ShAw7ock/MPE-Multiagent-RL-Algos/blob/master/models/simple_spread/vdn/run3/results/VDN_Simple_Spread.gif" width="352" height="352">
+<p align="center">
+  ***Simple Spread Training Demo***<br>
+  <img src="https://github.com/ShAw7ock/MPE-Multiagent-RL-Algos/blob/master/models/simple_spread/vdn/run3/results/VDN_Simple_Spread.gif" width="352" height="352"><br>
+  ***Figures and Algorithm Comparing***<br>
+  <img src="https://github.com/ShAw7ock/MPE-Multiagent-RL-Algos/blob/master/models/myplot.png" width="640" height="480">
+</p>
 <br>
 ***NOTE:*** <br>
 * If you wanna run this MPE environment successfully, you have to make sure you have download the [OpenAI Baselines](https://github.com/openai/baselines).<br>
