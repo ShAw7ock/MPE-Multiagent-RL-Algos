@@ -12,12 +12,15 @@ However, our goal to use the simple MPE environment is to verify our new algorit
 And the biggest difference between my code and MADDPG's code is the ***Design of the Experience Buffer*** which you could find in the `components/buffer.py`. The storage of the data is placed as ***[episodes_num, steps, n_agents, shape]***.<br>
 
 <p align="center">
-  ***Simple Spread Training Demo***<br>
-  <img src="https://github.com/ShAw7ock/MPE-Multiagent-RL-Algos/blob/master/models/simple_spread/vdn/run3/results/VDN_Simple_Spread.gif" width="352" height="352"><br>
-  ***Figures and Algorithm Comparing***<br>
-  <img src="https://github.com/ShAw7ock/MPE-Multiagent-RL-Algos/blob/master/models/myplot.png" width="640" height="480">
+ Simple Spread Demo<br>
+ <img src="https://github.com/ShAw7ock/MPE-Multiagent-RL-Algos/blob/master/models/simple_spread/vdn/run3/results/VDN_Simple_Spread.gif" width="352" height="352"><br>
 </p>
-<br>
+
+<p align="center">
+ Algorithm Comparing<br>
+ <img src="https://github.com/ShAw7ock/MPE-Multiagent-RL-Algos/blob/master/models/myplot.png" width="640" height="480">
+</p>
+
 ***NOTE:*** <br>
 * If you wanna run this MPE environment successfully, you have to make sure you have download the [OpenAI Baselines](https://github.com/openai/baselines).<br>
 * However, I have push the baselines' files into the project, if you find anything wrong with the baselines you download from OpenAI, you could just use the files of mine.<br>
@@ -35,13 +38,13 @@ And the biggest difference between my code and MADDPG's code is the ***Design of
 ## TODO List
 - [x] Evaluate and rendering
 - [x] Figures and comparing
-- [ ] Upload the training models.pt
+- [x] Upload the training models.pt
 - [ ] Multi-threading with creating envs
 
 Acknowledgement
 ---------------
 * I have been studying as a master student. There may be some problems with my codes and understanding of the algorithms.<br>
-* Modifying the parameters of the neural networks seems to be a big problem, and I can assure that the `VDN` can achieve the same performance as the MADDPG did. QMIX and COMA require further modified<br>
+* QMIX and LIIR algorithms need the total state infos which are not supported in MPE environment, so they are not supposed to get a result as VDN, COMA or MAAC. The solution is to change the source code of MPE remaining to do latter.<br>
 * `Shariq Iqbal`'s [MADDPG-PyTorch Codes](https://github.com/shariqiqbal2810/maddpg-pytorch) and `starry-sky6688`'s [StarCraft Multi-Agent RL Codes](https://github.com/starry-sky6688/StarCraft) are used as references.Of course, OpenAI opening their codes of `MADDPG` and `Multi-agent Particle Environment` also gives a lot of help.Thanks for their contributions to the open source world.<br>
 
 ***Thanks for using `ShAw7ock`'s codes.***
