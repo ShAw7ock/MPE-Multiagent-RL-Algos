@@ -91,8 +91,7 @@ def runner(env, args):
 
     agents = Agents(args)
     rolloutWorker = RolloutWorker(env, agents, args)
-    if args.algo.find('coma') == -1:
-        buffer = ReplayBuffer(args)
+    buffer = ReplayBuffer(args)
 
     train_step = 0
     mean_episode_rewards = []
@@ -117,32 +116,20 @@ def runner(env, args):
         for episode in episodes:
             for key in episodes_batch.keys():
                 episodes_batch[key] = np.concatenate((episodes_batch[key], episode[key]), axis=0)
+        buffer.push(episodes_batch)
 
         # Algorithms VDN and QMIX need the buffer but not the epsilon to train agents
         if args.algo.find('vdn') > -1 or args.algo.find('qmix') > -1:
-            buffer.push(episodes_batch)
             for _ in range(args.training_steps):
                 mini_batch = buffer.sample(min(buffer.current_size, args.batch_size))
                 agents.train(mini_batch, train_step)
                 train_step += 1
-        # Algorithms LIIR needs the buffer and the epsilon to train agents
-        elif args.algo.find('liir') > -1:
-            buffer.push(episodes_batch)
-            for _ in range(args.training_steps):
-                mini_batch = buffer.sample(min(buffer.current_size, args.batch_size))
-                agents.train(mini_batch, train_step, rolloutWorker.epsilon)
-                train_step += 1
-        # Algorithms MAAC needs the buffer and the epsilon to train agents
-        elif args.algo.find('maac') > -1:
-            buffer.push(episodes_batch)
-            for _ in range(args.training_steps):
-                mini_batch = buffer.sample(min(buffer.current_size, args.batch_size))
-                agents.train(mini_batch, train_step, rolloutWorker.epsilon)
-                train_step += 1
-        # Algorithms COMA doesn't need the buffer (on-policy) but the epsilon to train agents
+        # Algorithms COMA, LIIR, MAAC needs the buffer and the epsilon to train agents
         else:
-            agents.train(episodes_batch, train_step, rolloutWorker.epsilon)
-            train_step += 1
+            for _ in range(args.training_steps):
+                mini_batch = buffer.sample(min(buffer.current_size, args.batch_size))
+                agents.train(mini_batch, train_step, rolloutWorker.epsilon)
+                train_step += 1
 
         rews = np.mean(rews)
         mean_rews = np.mean(mean_rews)

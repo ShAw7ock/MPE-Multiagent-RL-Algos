@@ -64,14 +64,16 @@ def get_mixer_args(args):
 def get_coma_args(args):
     # network
     args.rnn_hidden_dim = 64
-    args.critic_dim = 128
+    args.embedding_dim = 32
+    args.critic_hidden_dim = 128
     args.actor_lr = 1e-3
     args.critic_lr = 1e-3
+    args.norm_in = False
 
     # epsilon-greedy
     args.epsilon = 0.5
     args.min_epsilon = 0.01
-    anneal_steps = 50000
+    anneal_steps = 10000
     args.anneal_epsilon = (args.epsilon - args.min_epsilon) / anneal_steps
     args.epsilon_anneal_scale = 'epoch'
 
@@ -81,8 +83,15 @@ def get_coma_args(args):
     # the number of the epoch to train the agent
     args.n_episodes = 200000
 
+    # the number of training steps in one episode
+    args.training_steps = 1
+
     # the number of the episodes in one epoch
     args.n_rollouts = 1
+
+    # experience replay
+    args.batch_size = 32
+    args.buffer_size = int(5e3)
 
     # how often to save the model
     args.save_cycle = 20000

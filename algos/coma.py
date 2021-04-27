@@ -4,6 +4,16 @@ from network.base_net import RNN
 from network.coma_critic import ComaCritic
 
 
+def disable_gradients(module):
+    for p in module.parameters():
+        p.requires_grad = False
+
+
+def enable_gradients(module):
+    for p in module.parameters():
+        p.requires_grad = True
+
+
 class COMA:
     def __init__(self, args):
         self.n_agents = args.n_agents
@@ -54,11 +64,15 @@ class COMA:
         if self.args.use_cuda:
             u = u.to(self.device)
 
-        critic_rets = self._train_critic(batch, max_episode_len, train_step)
-        q_values = torch.stack(critic_rets, dim=2)                      # (bs, episode_limit, n_agents, n_actions)
+        critic_rets = self._train_critic(batch, train_step)
+        q_taken, q_values = [], []
+        for a_i, (q_eval, q_all) in zip(range(self.n_agents), critic_rets):
+            q_taken.append(q_eval)
+            q_values.append(q_all)
+        q_taken = torch.stack(q_taken, dim=2).squeeze(3)
+        q_values = torch.stack(q_values, dim=2)
         action_prob = self._get_action_prob(batch, max_episode_len, epsilon)
 
-        q_taken = torch.gather(q_values, dim=3, index=u).squeeze(3)     # (bs, episode_limit, n_agents)
         pi_taken = torch.gather(action_prob, dim=3, index=u).squeeze(3)
         log_pi_taken = torch.log(pi_taken)
 
@@ -67,17 +81,19 @@ class COMA:
         advantage = (q_taken - baseline).detach()
         loss = - (advantage * log_pi_taken).mean()
         self.rnn_optimizer.zero_grad()
+        disable_gradients(self.eval_critic)
         loss.backward()
+        enable_gradients(self.eval_critic)
         torch.nn.utils.clip_grad_norm_(self.rnn_parameters, self.args.grad_norm_clip)
         self.rnn_optimizer.step()
 
-    def _train_critic(self, batch, max_episode_len, train_step):
+    def _train_critic(self, batch, train_step):
         """
         Unlike the qmix or vdn which seems like q_learning to choose the argmax Q values as the q_targets
         COMA is someway like the MADDPG or DDPG algorithm which is deterministic policy gradient method
         So it requires the deterministic next action infos as 'u_next'
 
-        :return: n_agents * (bs, episode_limit, n_actions)
+        :return: [n_agents * [(bs, episode_limit, 1), (bs, episode_limit, n_actions)]]
         """
         r, terminated = batch['r'], batch['terminated']
         if self.args.use_cuda:
@@ -85,22 +101,23 @@ class COMA:
             terminated = terminated.to(self.device)
 
         critic_in, target_critic_in = self._get_critic_inputs(batch)
-        q_targets = self.target_critic(target_critic_in)
-        q_evals = self.eval_critic(critic_in)
+        q_targets = self.target_critic(target_critic_in)                # n_agents * (bs, episode_limit, 1)
+        critic_rets = self.eval_critic(critic_in, return_all_q=True)
         q_loss = 0
-        for a_i, q_target, q_eval in zip(range(self.n_agents), q_targets, q_evals):
+        for a_i, q_target, (q_eval, q_all) in zip(range(self.n_agents), q_targets, critic_rets):
             target = r + self.args.gamma * q_target * (1 - terminated)
             q_loss += self.loss_func(target, q_eval)
 
         self.critic_optimizer.zero_grad()
         q_loss.backward()
+        self.eval_critic.scale_shared_grads()
         torch.nn.utils.clip_grad_norm_(self.eval_critic.parameters(), self.args.grad_norm_clip * self.n_agents)
         self.critic_optimizer.step()
 
         if train_step > 0 and train_step % self.args.target_update_cycle == 0:
             self.target_critic.load_state_dict(self.eval_critic.state_dict())
 
-        return q_evals
+        return critic_rets
 
     def _get_critic_inputs(self, batch):
         """
