@@ -12,7 +12,7 @@ However, our goal to use the simple MPE environment is to verify our new algorit
 And the biggest difference between my code and MADDPG's code is the ***Design of the Experience Buffer*** which you could find in the `components/buffer.py`. The storage of the data is placed as ***[episodes_num, steps, n_agents, shape]***.<br>
 
 ***Simple Spread Training Demo***<br>
-![img](https://github.com/ShAw7ock/MPE-Multiagent-RL-Algos/blob/master/models/simple_spread/vdn/run3/results/VDN_Simple_Spread.gif)
+<img src="https://github.com/ShAw7ock/MPE-Multiagent-RL-Algos/blob/master/models/simple_spread/vdn/run3/results/VDN_Simple_Spread.gif" width="352" height="352">
 <br>
 ***NOTE:*** <br>
 * If you wanna run this MPE environment successfully, you have to make sure you have download the [OpenAI Baselines](https://github.com/openai/baselines).<br>
@@ -30,7 +30,7 @@ And the biggest difference between my code and MADDPG's code is the ***Design of
 - [x] [MAAC](http://proceedings.mlr.press/v97/iqbal19a/iqbal19a.pdf)
 ## TODO List
 - [x] Evaluate and rendering
-- [ ] Figures and comparing
+- [x] Figures and comparing
 - [ ] Upload the training models.pt
 - [ ] Multi-threading with creating envs
 
