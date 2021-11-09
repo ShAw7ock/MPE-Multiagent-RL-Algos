@@ -16,13 +16,16 @@ class ReplayBuffer:
         self.n_agents = args.n_agents
         self.obs_shape = args.obs_shape
         self.n_actions = args.n_actions
+        self.state_shape = args.state_shape
         self.episode_limit = args.episode_limit
         self.size = args.buffer_size
         # Create the buffer to store info
         self.buffers = {'o': np.empty([self.size, self.episode_limit, self.n_agents, self.obs_shape]),
+                        's': np.empty([self.size, self.episode_limit, self.state_shape]),
                         'u': np.empty([self.size, self.episode_limit, self.n_agents, 1]),
                         'r': np.empty([self.size, self.episode_limit, 1]),
                         'o_next': np.empty([self.size, self.episode_limit, self.n_agents, self.obs_shape]),
+                        's_next': np.empty([self.size, self.episode_limit, self.state_shape]),
                         'u_onehot': np.empty([self.size, self.episode_limit, self.n_agents, self.n_actions]),
                         'terminated': np.empty([self.size, self.episode_limit, 1])
                         }
@@ -38,9 +41,11 @@ class ReplayBuffer:
         idxs = self._get_storage_idx(inc=batch_size)
         # store the informations
         self.buffers['o'][idxs] = episode_batch['o']
+        self.buffers['s'][idxs] = episode_batch['s']
         self.buffers['u'][idxs] = episode_batch['u']
         self.buffers['r'][idxs] = episode_batch['r']
         self.buffers['o_next'][idxs] = episode_batch['o_next']
+        self.buffers['s_next'][idxs] = episode_batch['s_next']
         self.buffers['u_onehot'][idxs] = episode_batch['u_onehot']
         self.buffers['terminated'][idxs] = episode_batch['terminated']
 

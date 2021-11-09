@@ -9,6 +9,7 @@ class QMIX:
         self.n_agents = args.n_agents
         self.n_actions = args.n_actions
         self.obs_shape = args.obs_shape
+        self.state_shape = args.state_shape
         input_shape = self.obs_shape
         if args.last_action:
             input_shape += self.n_actions
@@ -18,9 +19,8 @@ class QMIX:
         self.eval_rnn = RNN(input_shape, args)
         self.target_rnn = RNN(input_shape, args)
 
-        state_shape = self.obs_shape * self.n_agents
-        self.eval_qmix_net = QMIXNet(state_shape, args)
-        self.target_qmix_net = QMIXNet(state_shape, args)
+        self.eval_qmix_net = QMIXNet(self.state_shape, args)
+        self.target_qmix_net = QMIXNet(self.state_shape, args)
 
         self.args = args
         if args.use_cuda and torch.cuda.is_available():
@@ -50,10 +50,11 @@ class QMIX:
                 batch[key] = torch.tensor(batch[key], dtype=torch.long)
             else:
                 batch[key] = torch.tensor(batch[key], dtype=torch.float32)
+        s, s_next = batch['s'], batch['s_next']
         o, o_next, u, r, terminated = batch['o'], batch['o_next'], batch['u'], batch['r'], batch['terminated']
         if self.args.use_cuda and torch.cuda.is_available():
-            o = o.to(self.device)
-            o_next = o_next.to(self.device)
+            s = s.to(self.device)
+            s_next = s_next.to(self.device)
             u = u.to(self.device)
             r = r.to(self.device)
             terminated = terminated.to(self.device)
@@ -65,8 +66,8 @@ class QMIX:
         # qmix algorithm needs the total states infos to calculate the mixer network distribution
         # In the MPE, envs don't support the original states infos due to the Complete Observable (Not the POMDP)
         # So the state can be seen as the concatenation of all the agents' observations
-        states = o.reshape((bs, self.args.episode_limit, -1))
-        states_next = o_next.reshape((bs, self.args.episode_limit, -1))
+        states = s.reshape((bs, self.args.episode_limit, -1))
+        states_next = s_next.reshape((bs, self.args.episode_limit, -1))
         q_total_eval = self.eval_qmix_net(q_evals, states)
         q_total_target = self.target_qmix_net(q_targets, states_next)
 

@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+from itertools import chain
 
 
 class ComaCritic(nn.Module):
@@ -12,7 +13,7 @@ class ComaCritic(nn.Module):
         self.n_agents = args.n_agents
         self.n_actions = args.n_actions
         self.obs_shape = args.obs_shape
-        self.hidden_dim = args.critic_dim
+        self.hidden_dim = args.critic_hidden_dim
         critic_inputs_shape = self._get_critic_inputs_shape()
 
         self.critics = nn.ModuleList()
@@ -24,9 +25,33 @@ class ComaCritic(nn.Module):
 
             critic = nn.Sequential()
             critic.add_module('critic_fc1', nn.Linear(critic_inputs_shape, self.hidden_dim))
-            critic.add_module('critic_nl', nn.LeakyReLU())
-            critic.add_module('critic_fc2', nn.Linear(self.hidden_dim, odim))
+            critic.add_module('critic_nl1', nn.LeakyReLU())
+            critic.add_module('critic_fc2', nn.Linear(self.hidden_dim, self.hidden_dim))
+            critic.add_module('critic_nl2', nn.LeakyReLU())
+            critic.add_module('critic_fc3', nn.Linear(self.hidden_dim, odim))
             self.critics.append(critic)
+
+        self.shared_modules = None
+
+    def shared_parameters(self):
+        """
+        Parameters shared across agents and reward heads
+        """
+        if self.shared_modules is not None:
+            return chain(*[m.parameters() for m in self.shared_modules])
+        else:
+            pass
+
+    def scale_shared_grads(self):
+        """
+        Scale gradients for parameters that are shared since they accumulate
+        gradients from the critic loss function multiple times
+        """
+        if self.shared_modules is not None:
+            for p in self.shared_parameters():
+                p.grad.data.mul_(1. / self.n_agents)
+        else:
+            pass
 
     def forward(self, inps, return_q=True, return_all_q=False):
         agents = range(self.n_agents)

@@ -110,6 +110,7 @@ class LIIR:
         agent_loss = -(advantages * log_pi_taken).mean()
         self.agent_optimizer.zero_grad()
         agent_loss.backward(retain_graph=True)
+        torch.nn.utils.clip_grad_norm_(self.agent_params, self.args.grad_norm_clip)
         self.agent_optimizer.step()
 
         # ---------------- Intrinsic loss Optimizer --------------------------
@@ -159,6 +160,7 @@ class LIIR:
         intrinsic_loss = pg_ex_loss + v_ex_loss
         self.intrinsic_optimizer.zero_grad()
         intrinsic_loss.backward()
+        torch.nn.utils.clip_grad_norm_(self.intrinsic_params, self.args.grad_norm_clip)
         self.intrinsic_optimizer.step()
 
         self._update_policy_old()

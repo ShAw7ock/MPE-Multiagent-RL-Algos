@@ -19,8 +19,13 @@ class RolloutWorker:
         print('Init RolloutWorker')
 
     def generate_episode(self, episode_num=None, evaluate=False):
-        o, u, r, u_onehot, terminated = [], [], [], [], []
+        s, o, u, r, u_onehot, terminated = [], [], [], [], [], []
         obs = self.env.reset()
+        # env.reset will return a LIST with shape (n_agents + 1)
+        # including the local observation np.array for each agent and a total state np.array.
+        if len(obs) > self.n_agents:
+            state = obs[-1]
+            obs = obs[:-1]
         terminate = False
         step = 0
         episode_reward = 0
@@ -53,11 +58,13 @@ class RolloutWorker:
             # actions_onehot_env = [actions_onehot for _ in range(self.args.n_rollout_threads)]
             # obs_next, rewards, terminates, infos = self.env.step(actions_onehot_env)
             obs_next, rewards, terminates, infos = self.env.step(actions_onehot)
+            state_next = infos["state"]
             rewards = np.array(rewards).reshape([-1, self.n_agents])
             reward = np.mean(rewards, axis=-1)
             terminates = np.array(terminates).reshape([-1, self.n_agents])
             terminate = np.mean(terminates, axis=-1)
 
+            s.append(state)
             o.append(obs)
             u.append(np.reshape(actions, [self.n_agents, -1]))
             r.append(reward)
@@ -67,20 +74,26 @@ class RolloutWorker:
             episode_reward += reward
             step += 1
             obs = obs_next
+            state = state_next
             if self.args.epsilon_anneal_scale == 'step':
                 epsilon = epsilon - self.anneal_epsilon if epsilon > self.min_epsilon else epsilon
 
         # Append the last infos
         # obs = obs.reshape([self.n_agents, -1])
         o.append(obs)
+        s.append(state)
         o_next = o[1:]
         o = o[:-1]
+        s_next = s[1:]
+        s = s[:-1]
 
         episode = dict(o=o.copy(),
+                       s=s.copy(),
                        u=u.copy(),
                        r=r.copy(),
                        o_next=o_next.copy(),
                        u_onehot=u_onehot.copy(),
+                       s_next=s_next.copy(),
                        terminated=terminated.copy()
                        )
         for key in episode.keys():

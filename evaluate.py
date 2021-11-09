@@ -14,27 +14,33 @@ import matplotlib.pyplot as plt
 matplotlib.use('TkAgg')
 
 
+def get_shape(sp):
+    space, dim = 0, 0
+    if isinstance(sp, Box):
+        space = sp.shape[0]
+        dim = sp.shape[0]
+    elif isinstance(sp, Tuple):
+        for p in sp.spaces:
+            if isinstance(p, Box):
+                space += p.shape[0]
+                dim += p.shape[0]
+            else:
+                space += p.n
+                dim += 1
+    else:  # if the instance is 'Discrete', the action dim is 1
+        space = sp.n
+        dim = 1
+    return space, dim
+
+
 def get_env_scheme(env):
-    agent_init_params = []
+    """
+    We assume that the environment is the default 'simple_spread'
+    which has the same observation_space and action_space for each agent.
+    """
+    agent_init_params = {}
 
-    def get_shape(sp):
-        space, dim = 0, 0
-        if isinstance(sp, Box):
-            space = sp.shape[0]
-            dim = sp.shape[0]
-        elif isinstance(sp, Tuple):
-            for p in sp.spaces:
-                if isinstance(p, Box):
-                    space += p.shape[0]
-                    dim += p.shape[0]
-                else:
-                    space += p.n
-                    dim += 1
-        else:  # if the instance is 'Discrete', the action dim is 1
-            space = sp.n
-            dim = 1
-        return space, dim
-
+    """
     for acsp, obsp in zip(env.action_space, env.observation_space):
         observation_space, observation_dim = get_shape(obsp)
         action_space, action_dim = get_shape(acsp)
@@ -42,6 +48,20 @@ def get_env_scheme(env):
                                   'observation_dim': observation_dim,
                                   'action_space': action_space,
                                   'action_dim': action_dim})
+    """
+
+    num_agents = len(env.observation_space)
+    observation_space, observation_dim = get_shape(env.observation_space[0])
+    action_space, action_dim = get_shape(env.action_space[0])
+    state_space, state_dim = get_shape(env.state_space)
+
+    agent_init_params['n_agents'] = num_agents
+    agent_init_params['observation_space'] = observation_space
+    agent_init_params['observation_dim'] = observation_dim
+    agent_init_params['action_space'] = action_space
+    agent_init_params['action_dim'] = action_dim
+    agent_init_params['state_space'] = state_space
+    agent_init_params['state_dim'] = state_dim
 
     return agent_init_params
 
@@ -61,6 +81,11 @@ def runner(env, args):
     for ep_i in range(args.n_evaluate_episodes):
         print("Episode %i of %i" % (ep_i + 1, args.n_evaluate_episodes))
         obs = env.reset()
+        # env.reset will return a LIST with shape (n_agents + 1)
+        # including the local observation np.array for each agent and a total state np.array.
+        if len(obs) > args.n_agents:
+            state = obs[-1]
+            obs = obs[:-1]
         last_action = np.zeros((args.n_agents, args.n_actions))
         agents.policy.init_hidden(1)
         epsilon = 0
@@ -108,13 +133,15 @@ if __name__ == '__main__':
     assert args.n_rollout_threads == 1, "For simple test, the environment are required for 1"
     env = make_env(args.env_id)
     scheme = get_env_scheme(env)
-    args.n_agents = len(scheme)
-    args.obs_shape = scheme[0]['observation_space']
-    args.n_actions = scheme[0]['action_space']
+    args.n_agents = scheme['n_agents']
+    args.obs_shape = scheme['observation_space']
+    args.n_actions = scheme['action_space']
+    args.state_shape = scheme['state_space']
 
     # Some hyper-parameters for evaluating
     args.evaluate = True
-    args.run_num = 1
+    if args.run_num is None:
+        raise ValueError("You should set the model file number. For Example: choose the model-saved file number in ./models/simple_spread/vdn/run*")
     args.incremental = None
     args.fps = 30
     args.n_evaluate_episodes = 10

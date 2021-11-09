@@ -6,17 +6,21 @@ The environment includes many benchmarks and originally prepare for [MADDPG](htt
 Since the simple environment settings, `MPE` seems to be a good toy experienments' environment to verify our new Multi-Agent RL algorithms and compare with other baselines.<br>
 I write down some famous multi-agent RL algorithms for you so that you could change fewer codes to realize your own algorithms and verify the experiments results.<br>
 <br>
-The codes can only be used with the one of the benchmarks named `"simple_spread"` (env_id) which is a complete cooperation setting.<br>
-If the codes would like to adapt the other envs like MADDPG codes did, there would be much other work to do.<br>
-However, our goal to use the simple MPE environment is to verify our new algorithm, the `"simple_spread"` is enough. The next experiments which could be put into the papers may be the [StarCraft-SMAC](https://github.com/oxwhirl/smac) or something else.<br>
-And the biggest difference between my code and MADDPG's code is the ***Design of the Experience Buffer*** which you could find in the `components/buffer.py`. The storage of the data is placed as ***[episodes_num, steps, n_agents, shape]***.<br>
 
-***Simple Spread Training Demo***<br>
-![img](https://github.com/ShAw7ock/MPE-Multiagent-RL-Algos/blob/master/models/simple_spread/vdn/run3/results/VDN_Simple_Spread.gif)
-<br>
+<p align="center">
+ Simple Spread Demo<br>
+ <img src="https://github.com/ShAw7ock/MPE-Multiagent-RL-Algos/blob/master/models/simple_spread/vdn/run3/results/VDN_Simple_Spread.gif" width="352" height="352"><br>
+</p>
+
+<p align="center">
+ Algorithm Comparing<br>
+ <img src="https://github.com/ShAw7ock/MPE-Multiagent-RL-Algos/blob/master/models/myplot.png" width="640" height="480">
+</p>
+
 ***NOTE:*** <br>
-* If you wanna run this MPE environment successfully, you have to make sure you have download the [OpenAI Baselines](https://github.com/openai/baselines).<br>
-* However, I have push the baselines' files into the project, if you find anything wrong with the baselines you download from OpenAI, you could just use the files of mine.<br>
+* We assume that the default scenario `"simple_spread"` (complete cooperation setting) is the ***ONLY*** fitted one.<br>
+* And I have modified the MPE environment to fit the QMIX and LIIR algorithms (add the total state). So I suggest you to create a new virtual environment (Anaconda ...) to download my MPE repo.
+* The [OpenAI Baselines](https://github.com/openai/baselines) is REQUIRED for multi-process environment, and you can also use the baselines files in this repo.
 ## Requirements
 * Python >= 3.6.0
 * PyTorch == 1.2.0
@@ -28,16 +32,22 @@ And the biggest difference between my code and MADDPG's code is the ***Design of
 - [x] [COMA](https://ojs.aaai.org/index.php/AAAI/article/view/11794)
 - [x] [LIIR](https://proceedings.neurips.cc/paper/2019/file/07a9d3fed4c5ea6b17e80258dee231fa-Paper.pdf)
 - [x] [MAAC](http://proceedings.mlr.press/v97/iqbal19a/iqbal19a.pdf)
+## Running
+- To run the code, `cd` into the root directory and run `main.py`:
+``python main.py --algo ALGO_NAME``
+- You can replace the `ALGO_NAME` with the algorithms I have mentioned (`vdn`,`qmix`,`coma`,`liir` and `maac`).
+- To evaluate your saved model, `cd` into the root directory and run `evaluate.py`:
+``python evaluate.py --algo ALGO_NAME --run_num NUMBER``
+- You can replace the `NUMBER` with the model-saved file num, for example, you have saved the VDN model in `./models/simple_spread/vdn/run2` and you wanna evaluate it, then you should replace NUMBER with 2.
 ## TODO List
 - [x] Evaluate and rendering
-- [ ] Figures and comparing
-- [ ] Upload the training models.pt
+- [x] Figures and comparing
+- [x] Upload the training models.pt
 - [ ] Multi-threading with creating envs
 
 Acknowledgement
 ---------------
 * I have been studying as a master student. There may be some problems with my codes and understanding of the algorithms.<br>
-* Modifying the parameters of the neural networks seems to be a big problem, and I can assure that the `VDN` can achieve the same performance as the MADDPG did. QMIX and COMA require further modified<br>
 * `Shariq Iqbal`'s [MADDPG-PyTorch Codes](https://github.com/shariqiqbal2810/maddpg-pytorch) and `starry-sky6688`'s [StarCraft Multi-Agent RL Codes](https://github.com/starry-sky6688/StarCraft) are used as references.Of course, OpenAI opening their codes of `MADDPG` and `Multi-agent Particle Environment` also gives a lot of help.Thanks for their contributions to the open source world.<br>
 
 ***Thanks for using `ShAw7ock`'s codes.***
