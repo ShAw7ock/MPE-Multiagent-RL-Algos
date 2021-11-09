@@ -19,13 +19,13 @@ I write down some famous multi-agent RL algorithms for you so that you could cha
 
 ***NOTE:*** <br>
 * We assume that the default scenario `"simple_spread"` (complete cooperation setting) is the ***ONLY*** fitted one.<br>
-* And I have modified the MPE environment to fit the QMIX and LIIR algorithms (add the total state). So I suggest you to create a new virtual environment (Anaconda ...) to download my MPE repo.
+* And I have modified the MPE environment to fit the QMIX and LIIR algorithms (add the total state). So I suggest you to create a new virtual environment (Anaconda ...) to download my [modified MPE repo](https://github.com/ShAw7ock/mpe-modified-repo).
 * The [OpenAI Baselines](https://github.com/openai/baselines) is REQUIRED for multi-process environment, and you can also use the baselines files in this repo.
 ## Requirements
 * Python >= 3.6.0
 * PyTorch == 1.2.0
 * OpenAI Gym == 0.10.5
-* [Multi-agent Particle Environment (MPE)](https://github.com/openai/multiagent-particle-envs)
+* Modified [Multi-agent Particle Environment (MPE)](https://github.com/ShAw7ock/mpe-modified-repo)
 ## Algorithms
 - [x] [VDN](https://arxiv.org/pdf/1706.05296.pdf)
 - [x] [QMIX](http://proceedings.mlr.press/v80/rashid18a/rashid18a.pdf)
