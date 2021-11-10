@@ -35,12 +35,12 @@ I write down some famous multi-agent RL algorithms for you so that you could cha
 - [x] [LIIR](https://proceedings.neurips.cc/paper/2019/file/07a9d3fed4c5ea6b17e80258dee231fa-Paper.pdf)
 - [x] [MAAC](http://proceedings.mlr.press/v97/iqbal19a/iqbal19a.pdf)
 ## Running
-- To run the code, `cd` into the root directory and run `main.py`:
+- To run the code, `cd` into the root directory and run `main.py`:<br>
 ``python main.py --algo ALGO_NAME``
 - You can replace the `ALGO_NAME` with the algorithms I have mentioned (`vdn`,`qmix`,`coma`,`liir` and `maac`).
-- To evaluate your saved model, `cd` into the root directory and run `evaluate.py`:
+- To evaluate your saved model, `cd` into the root directory and run `evaluate.py`:<br>
 ``python evaluate.py --algo ALGO_NAME --run_num NUMBER``
-- You can replace the `NUMBER` with the model-saved file num, for example, you have saved the VDN model in `./models/simple_spread/vdn/run2` and you wanna evaluate it, then you should replace NUMBER with 2.
+- You can replace the `NUMBER` with the model-saved file num. For example, you have saved the VDN model in `./models/simple_spread/vdn/run2` and you wanna evaluate it, then you should replace `NUMBER` with 2. And checkpoints are also allowed to be evaluated with `--incremental SAVED_TIME`.
 ## TODO List
 - [x] Evaluate and rendering
 - [x] Figures and comparing
