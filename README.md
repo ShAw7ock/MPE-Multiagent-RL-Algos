@@ -21,6 +21,8 @@ I write down some famous multi-agent RL algorithms for you so that you could cha
 * We assume that the default scenario `"simple_spread"` (complete cooperation setting) is the ***ONLY*** fitted one.<br>
 * And I have modified the MPE environment to fit the QMIX and LIIR algorithms (add the total state). So I suggest you to create a new virtual environment (Anaconda ...) to download my [modified MPE repo](https://github.com/ShAw7ock/mpe-modified-repo).
 * The [OpenAI Baselines](https://github.com/openai/baselines) is REQUIRED for multi-process environment, and you can also use the baselines files in this repo.
+* Default setting (`./components/arguments.py`): inputs without last action, RNN framework (GRU), share networks among agents.
+* `VDN` and `MAAC` performs better than `COMA` and `QMIX`, but I suggest `QMIX` to train more than default 200000 episodes.
 ## Requirements
 * Python >= 3.6.0
 * PyTorch == 1.2.0
