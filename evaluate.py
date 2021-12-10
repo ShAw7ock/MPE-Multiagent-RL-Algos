@@ -53,15 +53,12 @@ def get_env_scheme(env):
     num_agents = len(env.observation_space)
     observation_space, observation_dim = get_shape(env.observation_space[0])
     action_space, action_dim = get_shape(env.action_space[0])
-    state_space, state_dim = get_shape(env.state_space)
 
     agent_init_params['n_agents'] = num_agents
     agent_init_params['observation_space'] = observation_space
     agent_init_params['observation_dim'] = observation_dim
     agent_init_params['action_space'] = action_space
     agent_init_params['action_dim'] = action_dim
-    agent_init_params['state_space'] = state_space
-    agent_init_params['state_dim'] = state_dim
 
     return agent_init_params
 
@@ -81,11 +78,6 @@ def runner(env, args):
     for ep_i in range(args.n_evaluate_episodes):
         print("Episode %i of %i" % (ep_i + 1, args.n_evaluate_episodes))
         obs = env.reset()
-        # env.reset will return a LIST with shape (n_agents + 1)
-        # including the local observation np.array for each agent and a total state np.array.
-        if len(obs) > args.n_agents:
-            state = obs[-1]
-            obs = obs[:-1]
         last_action = np.zeros((args.n_agents, args.n_actions))
         agents.policy.init_hidden(1)
         epsilon = 0
@@ -97,13 +89,13 @@ def runner(env, args):
         while step < args.n_evaluate_steps:
             calc_start = time.time()
             obs = np.array(obs).reshape((args.n_agents, -1))
-            actions, actions_onehot = [], []
+            obs = np.expand_dims(obs, axis=0)
+            actions_onehot = []
             for agent_num in range(args.n_agents):
-                action = agents.select_action(obs[agent_num], last_action[agent_num], agent_num, epsilon, args.evaluate)
-                action_onehot = np.zeros(args.n_actions)
-                action_onehot[action] = 1
-                actions.append(action)
-                actions_onehot.append(action_onehot)
+                _, action_onehot = agents.select_action(obs[:, agent_num], last_action[agent_num],
+                                                        agent_num, epsilon, args.evaluate)
+                action_onehot = action_onehot.squeeze(0)
+                actions_onehot.append(action_onehot.data.numpy())
                 last_action[agent_num] = action_onehot
 
             obs, rewards, terminates, infos = env.step(actions_onehot)
@@ -130,18 +122,19 @@ if __name__ == '__main__':
         args = get_liir_args(args)
     else:
         args = get_coma_args(args)
-    assert args.n_rollout_threads == 1, "For simple test, the environment are required for 1"
     env = make_env(args.env_id)
     scheme = get_env_scheme(env)
     args.n_agents = scheme['n_agents']
     args.obs_shape = scheme['observation_space']
     args.n_actions = scheme['action_space']
-    args.state_shape = scheme['state_space']
 
     # Some hyper-parameters for evaluating
     args.evaluate = True
+    # Test env will not be parallel.
+    args.n_parallel_threads = 1
     if args.run_num is None:
-        raise ValueError("You should set the model file number. For Example: choose the model-saved file number in ./models/simple_spread/vdn/run*")
+        raise ValueError("You should set the model file number."
+                         "For Example: choose the model-saved file number in ./models/simple_spread/vdn/run*")
     args.incremental = None
     args.fps = 30
     args.n_evaluate_episodes = 10
