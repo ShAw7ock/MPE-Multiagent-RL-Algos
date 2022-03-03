@@ -6,9 +6,9 @@ def get_common_args():
     parser.add_argument("--env_id", default='simple_spread', type=str,
                         help="Name of environment")
     parser.add_argument('--seed', type=int, default=123, help='random seed')
-    parser.add_argument("--n_parallel_threads", default=5, type=int, help="The parallel envs to create")
+    parser.add_argument("--n_parallel_envs", default=5, type=int, help="The parallel envs to create")
     parser.add_argument("--n_training_threads", default=12, type=int, help="While using the cpu")
-    parser.add_argument("--episode_limit", default=25, type=int, help="MPE has no terminate in an episode")
+    parser.add_argument("--episode_limit", default=50, type=int, help="MPE has no terminate in an episode")
 
     # The algorithm choices: vdn, qmix, coma, liir, maac
     parser.add_argument('--algo', type=str, required=True, help='the algorithm to train the agent')

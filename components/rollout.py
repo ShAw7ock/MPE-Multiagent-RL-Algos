@@ -9,7 +9,7 @@ class RolloutWorker:
         self.n_actions = args.n_actions
         self.obs_shape = args.obs_shape
         self.episode_limit = args.episode_limit
-        self.n_envs = args.n_parallel_threads
+        self.n_envs = args.n_parallel_envs
         self.args = args
 
         self.epsilon = args.epsilon

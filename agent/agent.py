@@ -34,7 +34,7 @@ class Agents:
         print('Init Agents')
 
     def select_action(self, obs, last_action, agent_num, epsilon, evaluate=False):
-        n_envs = self.args.n_parallel_threads
+        n_envs = self.args.n_parallel_envs
         inputs = obs.copy()
         agent_id = np.zeros(self.n_agents)
         agent_id[agent_num] = 1

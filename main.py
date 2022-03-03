@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 matplotlib.use('TkAgg')
 
 
-def make_parallel_env(env_id, n_parallel_threads, seed, discrete_action=True):
+def make_parallel_env(env_id, n_parallel_envs, seed, discrete_action=True):
     def get_env_fn(rank):
         def init_env():
             env = make_env(env_id, discrete_action=discrete_action)
@@ -26,10 +26,10 @@ def make_parallel_env(env_id, n_parallel_threads, seed, discrete_action=True):
             np.random.seed(seed + rank * 1000)
             return env
         return init_env
-    if n_parallel_threads == 1:
+    if n_parallel_envs == 1:
         return DummyVecEnv([get_env_fn(0)])
     else:
-        return SubprocVecEnv([get_env_fn(i) for i in range(n_parallel_threads)])
+        return SubprocVecEnv([get_env_fn(i) for i in range(n_parallel_envs)])
 
 
 def get_shape(sp):
@@ -113,9 +113,9 @@ def runner(env, args):
     train_step = 0
     mean_episode_rewards = []
 
-    for ep_i in range(0, args.n_episodes, args.n_parallel_threads):
+    for ep_i in range(0, args.n_episodes, args.n_parallel_envs):
         print("Episodes %i-%i of %i" % (ep_i + 1,
-                                        ep_i + 1 + args.n_parallel_threads,
+                                        ep_i + 1 + args.n_parallel_envs,
                                         args.n_episodes))
         if args.display:
             for env_show in env.envs:
@@ -154,7 +154,7 @@ def runner(env, args):
         logger.add_scalar('mean_episode_rewards', mean_rews, ep_i)
         print("Episode {} : Total reward {} , Mean reward {}".format(ep_i + 1, rews, mean_rews))
 
-        if ep_i % args.save_cycle < args.n_parallel_threads:
+        if ep_i % args.save_cycle < args.n_parallel_envs:
             os.makedirs(str(run_dir / 'incremental'), exist_ok=True)
             agents.save(str(run_dir / 'incremental' / ('model_ep%i.pt' % (ep_i + 1))))
             agents.save(str(run_dir / 'model.pt'))
@@ -185,7 +185,7 @@ if __name__ == '__main__':
     if args.env_id != "simple_spread":
         raise ValueError("We require the default environment SIMPLE_SPREAD ...")
     # env = make_env(args.env_id)
-    env = make_parallel_env(args.env_id, args.n_parallel_threads, args.seed)
+    env = make_parallel_env(args.env_id, args.n_parallel_envs, args.seed)
     scheme = get_env_scheme(env)
     args.n_agents = scheme['n_agents']
     args.obs_shape = scheme['observation_space']
