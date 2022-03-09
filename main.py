@@ -103,7 +103,7 @@ def runner(env, args):
     torch.manual_seed(args.seed)
     np.random.seed(args.seed)
 
-    if not args.use_cuda:
+    if not args.use_cuda and args.n_training_threads is not None:
         torch.set_num_threads(args.n_training_threads)
 
     agents = Agents(args)
