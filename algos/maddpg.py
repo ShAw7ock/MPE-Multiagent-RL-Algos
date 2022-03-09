@@ -29,7 +29,7 @@ class MADDPG:
             actor_input_shape += self.n_agents
 
         self.eval_rnn = RNN(actor_input_shape, args)
-        print('Init Algo Coma')
+        print('Init Algo MADDPG')
 
         self.eval_critic = ComaCritic(args)
         self.target_critic = ComaCritic(args)
