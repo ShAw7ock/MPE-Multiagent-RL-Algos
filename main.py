@@ -176,7 +176,7 @@ if __name__ == '__main__':
     args = get_common_args()
     if args.algo.find('vdn') > -1 or args.algo.find('qmix') > -1:
         args = get_mixer_args(args)
-    elif args.algo.find('coma') > -1:
+    elif args.algo.find('coma') > -1 or args.algo.find('maddpg') > -1:
         args = get_coma_args(args)
     elif args.algo.find('maac') > -1:
         args = get_maac_args(args)

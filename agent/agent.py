@@ -3,6 +3,7 @@ import torch
 from algos.vdn import VDN
 from algos.qmix import QMIX
 from algos.coma import COMA
+from algos.maddpg import MADDPG
 from algos.liir import LIIR
 from algos.maac import MAAC
 from torch.distributions import Categorical
@@ -19,6 +20,8 @@ class Agents:
             self.policy = QMIX(args)
         elif args.algo == 'coma':
             self.policy = COMA(args)
+        elif args.algo == 'maddpg':
+            self.policy = MADDPG(args)
         elif args.algo == 'liir':
             self.policy = LIIR(args)
         elif args.algo == 'maac':
@@ -53,14 +56,14 @@ class Agents:
         # get q values
         q_value, self.policy.eval_hidden[:, agent_num, :] = self.policy.eval_rnn(inputs, hidden_state)
         # choose the action
-        if self.args.algo == 'coma' or self.args.algo == 'liir' or self.args.algo == 'maac':
-            actions = self._select_action_from_softmax(q_value.cpu(), epsilon, evaluate)
-        else:
+        if self.args.algo == 'vdn' or self.args.algo == 'qmix':
             if np.random.uniform() < epsilon:
                 actions = [np.random.choice(self.n_actions) for _ in range(n_envs)]
                 actions = torch.tensor(actions, dtype=torch.long).unsqueeze(1)
             else:
                 actions = torch.argmax(q_value, dim=1).unsqueeze(1)     # shape=(n_envs, 1)
+        else:
+            actions = self._select_action_from_softmax(q_value.cpu(), epsilon, evaluate)
         actions_onehot = torch.zeros(n_envs, self.n_actions).scatter_(1, actions, 1)
 
         return actions, actions_onehot
