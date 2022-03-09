@@ -22,29 +22,30 @@ I write some famous multi-agent RL algorithms for you so that you could change f
 * We used to modify the MPE environment to fit QMIX and LIIR (add total state over local observation), but we finally decide to rollback because the code is not elegant and generalized after modified.
 * The [OpenAI Baselines](https://github.com/openai/baselines) is REQUIRED for multi-process environment, and you can also use the baselines files in this repo.
 * Default setting (`./components/arguments.py`): inputs without last action (optioned), RNN framework (GRU), share networks among agents.
-* `VDN`, `MAAC` and `COMA` require NOT total state and work as section ***Running***. `QMIX` and `LIIR` use concatenation of all local observations as total state, so they cannot perform as original papers (experiments under StarCraftⅡ).
+* `VDN`, `MADDPG` `MAAC` and `COMA` require NOT total state and work as section ***Running***. `QMIX` and `LIIR` use concatenation of all local observations as total state, so they cannot perform as original papers (experiments under StarCraftⅡ).
 * The green `QMIX` curve in Figure 2 is plotted with my [Modified Multi-agent Particle Environment](https://github.com/ShAw7ock/mpe-modified-repo) which calculate the absolute information for agents as total state (local observations calculate the relative information).
 ## Requirements
 * Python >= 3.6.0
-* PyTorch == 1.2.0
+* PyTorch == 1.2.0 (Optional)
 * OpenAI Gym == 0.10.5
 * [Multi-agent Particle Environment](https://github.com/openai/multiagent-particle-envs)
 ## Algorithms
 - [x] [VDN](https://arxiv.org/pdf/1706.05296.pdf)
 - [x] [QMIX](http://proceedings.mlr.press/v80/rashid18a/rashid18a.pdf)
+- [x] [MADDPG](https://proceedings.neurips.cc/paper/2017/file/68a9750337a418a86fe06c1991a1d64c-Paper.pdf)
 - [x] [COMA](https://ojs.aaai.org/index.php/AAAI/article/view/11794)
 - [x] [LIIR](https://proceedings.neurips.cc/paper/2019/file/07a9d3fed4c5ea6b17e80258dee231fa-Paper.pdf)
 - [x] [MAAC](http://proceedings.mlr.press/v97/iqbal19a/iqbal19a.pdf)
 ## Running
 - To run the code, `cd` into the root directory and run `main.py`:<br>
 ``python main.py --algo ALGO_NAME``
-- You can replace the `ALGO_NAME` with the algorithms I have mentioned (`vdn`,`qmix`,`coma`,`liir` and `maac`).
+- You can replace the `ALGO_NAME` with the algorithms I have mentioned (`vdn`,`qmix`,`maddpg`,`coma`,`liir` and `maac`).
 - To evaluate your saved model, `cd` into the root directory and run `evaluate.py`:<br>
 ``python evaluate.py --algo ALGO_NAME --run_num NUMBER``
 - You can replace the `NUMBER` with the model-saved file num. For example, you have saved the VDN model in `./models/simple_spread/vdn/run2` and you wanna evaluate it, then you should replace `NUMBER` with 2. And checkpoints are also allowed to be evaluated with `--incremental SAVED_TIME`.
 ## TODO List
 - [x] Evaluate and rendering
-- [x] Figures and comparing
+- [x] Training with CUDA
 - [x] Upload the training models.pt
 - [x] Multi-threading with creating envs
 
