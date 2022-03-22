@@ -131,7 +131,7 @@ if __name__ == '__main__':
     # Some hyper-parameters for evaluating
     args.evaluate = True
     # Test env will not be parallel.
-    args.n_parallel_threads = 1
+    args.n_parallel_envs = 1
     if args.run_num is None:
         raise ValueError("You should set the model file number."
                          "For Example: choose the model-saved file number in ./models/simple_spread/vdn/run*")
