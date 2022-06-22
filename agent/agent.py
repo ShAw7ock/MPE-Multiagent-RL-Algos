@@ -1,11 +1,6 @@
 import numpy as np
 import torch
-from algos.vdn import VDN
-from algos.qmix import QMIX
-from algos.coma import COMA
-from algos.maddpg import MADDPG
-from algos.liir import LIIR
-from algos.maac import MAAC
+from algos import VDN, QMIX, COMA, MADDPG, MAAC, LIIR
 from torch.distributions import Categorical
 
 
